@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import br.com.alura.panucci.sampledata.bottomAppBarItems
 import br.com.alura.panucci.sampledata.sampleProducts
@@ -28,6 +29,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val navController = rememberNavController()
+            val backStackEntryState by navController.currentBackStackEntryAsState()
+            val currentDestination = backStackEntryState?.destination
 
             //Use o LauccheDEffect para logica que não se aplica a click ou eventos
             // Pq o compose executa a criacao de tela com muita frequencia e se essa logica não for
@@ -41,14 +44,17 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    var selectedItem by remember {
-                        val item = bottomAppBarItems.first()
+                    val selectedItem by remember(currentDestination) {
+                        val item = currentDestination?.let { destination ->
+                            bottomAppBarItems.find {
+                                it.route == destination.route
+                            }
+                        } ?: bottomAppBarItems.first()
                         mutableStateOf(item)
                     }
                     PanucciApp(
                         bottomAppBarItemSelected = selectedItem,
                         onBottomAppBarItemSelectedChange = {
-                            selectedItem = it
                             val route = it.route
                             navController.navigate(route)
                         },
