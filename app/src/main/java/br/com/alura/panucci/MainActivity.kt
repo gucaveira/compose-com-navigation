@@ -61,19 +61,37 @@ class MainActivity : ComponentActivity() {
                                 popUpTo(route)
                             }
                         },
-                        onFabClick = {}) {
+                        onFabClick = { navController.navigate("checkout") }) {
                         NavHost(
                             navController = navController,
                             startDestination = "highlight"
                         ) {
                             composable("highlight") {
-                                HighlightsListScreen(products = sampleProducts)
+                                HighlightsListScreen(
+                                    products = sampleProducts,
+                                    onNavigateToDetails = {
+                                        navController.navigate("productDetails")
+                                    }, onNavigateToCheckout = {
+                                        navController.navigate("checkout")
+                                    })
                             }
                             composable("menu") {
-                                MenuListScreen(products = sampleProducts)
+                                MenuListScreen(products = sampleProducts) {
+                                    navController.navigate("productDetails")
+                                }
                             }
                             composable("drinks") {
-                                DrinksListScreen(products = sampleProducts)
+                                DrinksListScreen(products = sampleProducts) {
+                                    navController.navigate("productDetails")
+                                }
+                            }
+                            composable("productDetails") {
+                                ProductDetailsScreen(product = sampleProducts.random()){
+                                    navController.navigate("checkout")
+                                }
+                            }
+                            composable("checkout") {
+                                CheckoutScreen(products = sampleProducts)
                             }
                         }
                     }

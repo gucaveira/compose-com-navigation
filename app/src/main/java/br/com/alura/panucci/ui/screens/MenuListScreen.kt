@@ -1,5 +1,6 @@
 package br.com.alura.panucci.ui.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -27,6 +28,7 @@ fun MenuListScreen(
     modifier: Modifier = Modifier,
     title: String = "Menu",
     products: List<Product> = emptyList(),
+    onNavigateToDetails: () -> Unit = {},
 ) {
     Column(
         modifier.fillMaxSize()
@@ -51,6 +53,7 @@ fun MenuListScreen(
             items(products) { p ->
                 MenuProductCard(
                     product = p,
+                    Modifier.clickable { onNavigateToDetails() }
                 )
             }
         }
