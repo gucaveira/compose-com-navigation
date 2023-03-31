@@ -123,6 +123,7 @@ class MainActivity : ComponentActivity() {
                                 } ?: LaunchedEffect(Unit) {
                                     // caso alguma informação for nula esse codigo
                                     // vai ser executado.
+                                    //e oferece suporte do Deep Link
                                     navController.navigateUp()
                                 }
                             }
