@@ -40,6 +40,10 @@ class MainActivity : ComponentActivity() {
                 navController.navigate("menu")
             }*/
 
+           // Considerando que é uma ação que pode ser afetada pela recomposição,
+            // precisamos realizar a navegação utilizando a API de Effect
+            // ou a partir de um evento de um composable que utilizar a API de Effect internamente.
+
             PanucciTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
