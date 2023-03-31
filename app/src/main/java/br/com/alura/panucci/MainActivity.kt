@@ -42,8 +42,7 @@ class MainActivity : ComponentActivity() {
 
             PanucciTheme {
                 Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {
                     val selectedItem by remember(currentDestination) {
                         val item = currentDestination?.let { destination ->
@@ -80,12 +79,10 @@ class MainActivity : ComponentActivity() {
                         isShowFab = isShowFab,
                     ) {
                         NavHost(
-                            navController = navController,
-                            startDestination = Highlight.route
+                            navController = navController, startDestination = Highlight.route
                         ) {
                             composable(Highlight.route) {
-                                HighlightsListScreen(
-                                    products = sampleProducts,
+                                HighlightsListScreen(products = sampleProducts,
                                     onNavigateToDetails = { product ->
                                         navController.navigate("${ProductDetails.route}/${product.id}")
                                     },
@@ -115,13 +112,20 @@ class MainActivity : ComponentActivity() {
                                 sampleProducts.find {
                                     it.id == id
                                 }?.let { product ->
-                                    ProductDetailsScreen(product = product) {
+                                    ProductDetailsScreen(product = product, onNavigateToCheckout = {
                                         navController.navigate(Checkout.route)
-                                    }
+                                    })
+
+                                } ?: LaunchedEffect(Unit) {
+                                    // caso alguma informação for nula esse codigo
+                                    // vai ser executado.
+                                    navController.navigateUp()
                                 }
                             }
                             composable(Checkout.route) {
-                                CheckoutScreen(products = sampleProducts)
+                                CheckoutScreen(products = sampleProducts, onPopBackStack = {
+                                    navController.navigateUp()
+                                })
                             }
                         }
                     }
@@ -143,38 +147,33 @@ fun PanucciApp(
     isShowFab: Boolean = false,
     content: @Composable () -> Unit,
 ) {
-    Scaffold(
-        topBar = {
-            if (isShowTopBar) {
-                CenterAlignedTopAppBar(
-                    title = {
-                        Text(text = "Ristorante Panucci")
-                    },
+    Scaffold(topBar = {
+        if (isShowTopBar) {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(text = "Ristorante Panucci")
+                },
+            )
+        }
+    }, bottomBar = {
+        if (isShowBottomBar) {
+            PanucciBottomAppBar(
+                item = bottomAppBarItemSelected,
+                items = bottomAppBarItems,
+                onItemChange = onBottomAppBarItemSelectedChange,
+            )
+        }
+    }, floatingActionButton = {
+        if (isShowFab) {
+            FloatingActionButton(
+                onClick = onFabClick
+            ) {
+                Icon(
+                    Icons.Filled.PointOfSale, contentDescription = null
                 )
-            }
-        },
-        bottomBar = {
-            if (isShowBottomBar) {
-                PanucciBottomAppBar(
-                    item = bottomAppBarItemSelected,
-                    items = bottomAppBarItems,
-                    onItemChange = onBottomAppBarItemSelectedChange,
-                )
-            }
-        },
-        floatingActionButton = {
-            if (isShowFab) {
-                FloatingActionButton(
-                    onClick = onFabClick
-                ) {
-                    Icon(
-                        Icons.Filled.PointOfSale,
-                        contentDescription = null
-                    )
-                }
             }
         }
-    ) {
+    }) {
         Box(
             modifier = Modifier.padding(it)
         ) {
