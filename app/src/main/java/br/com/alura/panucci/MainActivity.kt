@@ -5,13 +5,20 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.PointOfSale
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.datastore.preferences.core.edit
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -23,13 +30,17 @@ import br.com.alura.panucci.ui.components.BottomAppBarItem
 import br.com.alura.panucci.ui.components.PanucciBottomAppBar
 import br.com.alura.panucci.ui.screens.*
 import br.com.alura.panucci.ui.theme.PanucciTheme
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            val context = LocalContext.current
             val navController = rememberNavController()
+            val scope = rememberCoroutineScope()
             val backStackEntryState by navController.currentBackStackEntryAsState()
             val currentDestination = backStackEntryState?.destination
 
@@ -40,7 +51,7 @@ class MainActivity : ComponentActivity() {
                 navController.navigate("menu")
             }*/
 
-           // Considerando que é uma ação que pode ser afetada pela recomposição,
+            // Considerando que é uma ação que pode ser afetada pela recomposição,
             // precisamos realizar a navegação utilizando a API de Effect
             // ou a partir de um evento de um composable que utilizar a API de Effect internamente.
 
@@ -81,19 +92,70 @@ class MainActivity : ComponentActivity() {
                         isShowTopBar = containsInBottomAppBarItems,
                         isShowBottomBar = containsInBottomAppBarItems,
                         isShowFab = isShowFab,
+                        onLogout = {
+                            scope.launch {
+                                context.dataStore.edit {
+                                    it.remove(userPreferences)
+                                }
+                            }
+
+                            navController.navigate(Authentication.route) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    inclusive = true
+                                }
+                            }
+                        }
                     ) {
                         NavHost(
                             navController = navController, startDestination = Highlight.route
                         ) {
                             composable(Highlight.route) {
-                                HighlightsListScreen(products = sampleProducts,
-                                    onNavigateToDetails = { product ->
-                                        navController.navigate("${ProductDetails.route}/${product.id}")
-                                    },
-                                    onNavigateToCheckout = {
-                                        navController.navigate(Checkout.route)
-                                    })
+
+                                var user: String? by remember {
+                                    mutableStateOf(null)
+                                }
+
+                                var dataState by remember {
+                                    mutableStateOf("loading")
+                                }
+
+                                LaunchedEffect(null) {
+                                    user = context.dataStore.data.first()[userPreferences]
+                                    dataState = "finished"
+                                }
+
+                                when (dataState) {
+                                    "loading" -> {
+                                        Box(modifier = Modifier.fillMaxSize()) {
+                                            Text(
+                                                text = "Carregando...",
+                                                Modifier
+                                                    .fillMaxWidth()
+                                                    .align(Alignment.Center),
+                                                textAlign = TextAlign.Center
+                                            )
+                                        }
+                                    }
+                                    "finished" -> {
+                                        user?.let {
+                                            HighlightsListScreen(products = sampleProducts,
+                                                onNavigateToDetails = { product ->
+                                                    navController.navigate("${ProductDetails.route}/${product.id}")
+                                                },
+                                                onNavigateToCheckout = {
+                                                    navController.navigate(Checkout.route)
+                                                })
+                                        } ?: LaunchedEffect(key1 = null) {
+                                            navController.navigate(Authentication.route) {
+                                                popUpTo(navController.graph.findStartDestination().id) {
+                                                    inclusive = true
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                             }
+
                             composable(Menu.route) {
                                 MenuListScreen(
                                     products = sampleProducts,
@@ -132,6 +194,21 @@ class MainActivity : ComponentActivity() {
                                     navController.navigateUp()
                                 })
                             }
+
+                            composable(Authentication.route) {
+
+                                AuthenticationScreen { user ->
+                                    scope.launch {
+                                        context.dataStore.edit {
+                                            it[userPreferences] = user
+                                        }
+                                    }
+
+                                    navController.navigate(Highlight.route) {
+                                        popUpTo(navController.graph.id)
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -147,6 +224,7 @@ fun PanucciApp(
     bottomAppBarItemSelected: BottomAppBarItem = bottomAppBarItems.first(),
     onBottomAppBarItemSelectedChange: (BottomAppBarItem) -> Unit = {},
     onFabClick: () -> Unit = {},
+    onLogout: () -> Unit = {},
     isShowTopBar: Boolean = false,
     isShowBottomBar: Boolean = false,
     isShowFab: Boolean = false,
@@ -158,6 +236,14 @@ fun PanucciApp(
                 title = {
                     Text(text = "Ristorante Panucci")
                 },
+                actions = {
+                    IconButton(onClick = onLogout) {
+                        Icon(
+                            Icons.Filled.ExitToApp,
+                            contentDescription = "sair do app"
+                        )
+                    }
+                }
             )
         }
     }, bottomBar = {
