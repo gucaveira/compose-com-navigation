@@ -85,5 +85,5 @@ fun NavGraphBuilder.highlightsListScreen(
 }*/
 
 fun NavController.navigateToHighlightsList(navOptions: NavOptions? = null) {
-    navigate(drinksRoute, navOptions)
+    navigate(highlightsListRoute, navOptions)
 }
