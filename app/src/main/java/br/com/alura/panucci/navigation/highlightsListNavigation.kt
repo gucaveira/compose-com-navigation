@@ -13,20 +13,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
+import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.compose.composable
+import androidx.navigation.navOptions
 import br.com.alura.panucci.dataStore
 import br.com.alura.panucci.sampledata.sampleProducts
 import br.com.alura.panucci.ui.screens.HighlightsListScreen
 import br.com.alura.panucci.userPreferences
 import kotlinx.coroutines.flow.first
 
+internal const val highlightsListRoute = "highlight"
+
 fun NavGraphBuilder.highlightsListScreen(
     navController: NavHostController,
 ) {
-    composable(AppDestination.Highlight.route) {
+    composable(highlightsListRoute) {
 
         val context = LocalContext.current
 
@@ -59,13 +64,13 @@ fun NavGraphBuilder.highlightsListScreen(
                 user?.let {
                     HighlightsListScreen(products = sampleProducts,
                         onNavigateToDetails = { product ->
-                            navController.navigate("${AppDestination.ProductDetails.route}/${product.id}")
+                            navController.navigateToProductDetails(product.id)
                         },
                         onNavigateToCheckout = {
-                            navController.navigate(AppDestination.Checkout.route)
+                            navController.navigateToCheckout()
                         })
                 } ?: LaunchedEffect(key1 = null) {
-                    navController.navigate(AppDestination.Authentication.route) {
+                    navController.navigateToAuthentication {
                         popUpTo(navController.graph.findStartDestination().id) {
                             inclusive = true
                         }
@@ -74,4 +79,8 @@ fun NavGraphBuilder.highlightsListScreen(
             }
         }
     }
+}
+
+fun NavController.navigateToHighlightsList(route: String, builder: NavOptionsBuilder.() -> Unit) {
+    navigate(route, navOptions(builder))
 }
