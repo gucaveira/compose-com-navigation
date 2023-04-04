@@ -59,7 +59,7 @@ fun NavGraphBuilder.highlightsListScreen(
                     )
                 }
             }
-            "finished" -> {
+            "loading" -> {
                 user?.let {
                     HighlightsListScreen(products = sampleProducts,
                         onNavigateToDetails = { product ->

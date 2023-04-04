@@ -18,16 +18,13 @@ import androidx.datastore.preferences.core.edit
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navOptions
 import br.com.alura.panucci.navigation.PanucciNavHost
 import br.com.alura.panucci.navigation.drinksRoute
+import br.com.alura.panucci.navigation.graph.navigateSingleTopWithPopUpTo
 import br.com.alura.panucci.navigation.highlightsListRoute
 import br.com.alura.panucci.navigation.menuRoute
 import br.com.alura.panucci.navigation.navigateToAuthentication
 import br.com.alura.panucci.navigation.navigateToCheckout
-import br.com.alura.panucci.navigation.navigateToDrinks
-import br.com.alura.panucci.navigation.navigateToHighlightsList
-import br.com.alura.panucci.navigation.navigateToMenu
 import br.com.alura.panucci.ui.components.BottomAppBarItem
 import br.com.alura.panucci.ui.components.BottomAppBarItem.*
 import br.com.alura.panucci.ui.components.PanucciBottomAppBar
@@ -86,24 +83,7 @@ class MainActivity : ComponentActivity() {
                     PanucciApp(
                         bottomAppBarItemSelected = selectedItem,
                         onBottomAppBarItemSelectedChange = { item ->
-                            val (route, navigate) = when (item) {
-                                Drinks -> Pair(drinksRoute, navController::navigateToDrinks)
-                                HighlightsList ->
-                                    Pair(
-                                        highlightsListRoute,
-                                        navController::navigateToHighlightsList
-                                    )
-                                Menu -> Pair(menuRoute, navController::navigateToMenu)
-                            }
-
-
-                            val navOptions = navOptions {
-                                launchSingleTop = true
-                                popUpTo(route)
-                            }
-
-                            navigate(navOptions)
-
+                            navController.navigateSingleTopWithPopUpTo(item)
                         },
                         onFabClick = { navController.navigateToCheckout() },
                         isShowTopBar = containsInBottomAppBarItems,
