@@ -5,32 +5,26 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.PointOfSale
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.datastore.preferences.core.edit
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import br.com.alura.panucci.navigation.AppDestination.*
+import br.com.alura.panucci.navigation.PanucciNavHost
 import br.com.alura.panucci.navigation.bottomAppBarItems
-import br.com.alura.panucci.sampledata.sampleProducts
 import br.com.alura.panucci.ui.components.BottomAppBarItem
 import br.com.alura.panucci.ui.components.PanucciBottomAppBar
 import br.com.alura.panucci.ui.screens.*
 import br.com.alura.panucci.ui.theme.PanucciTheme
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -106,110 +100,7 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                     ) {
-                        NavHost(
-                            navController = navController, startDestination = Highlight.route
-                        ) {
-                            composable(Highlight.route) {
-
-                                var user: String? by remember {
-                                    mutableStateOf(null)
-                                }
-
-                                var dataState by remember {
-                                    mutableStateOf("loading")
-                                }
-
-                                LaunchedEffect(null) {
-                                    user = context.dataStore.data.first()[userPreferences]
-                                    dataState = "finished"
-                                }
-
-                                when (dataState) {
-                                    "loading" -> {
-                                        Box(modifier = Modifier.fillMaxSize()) {
-                                            Text(
-                                                text = "Carregando...",
-                                                Modifier
-                                                    .fillMaxWidth()
-                                                    .align(Alignment.Center),
-                                                textAlign = TextAlign.Center
-                                            )
-                                        }
-                                    }
-                                    "finished" -> {
-                                        user?.let {
-                                            HighlightsListScreen(products = sampleProducts,
-                                                onNavigateToDetails = { product ->
-                                                    navController.navigate("${ProductDetails.route}/${product.id}")
-                                                },
-                                                onNavigateToCheckout = {
-                                                    navController.navigate(Checkout.route)
-                                                })
-                                        } ?: LaunchedEffect(key1 = null) {
-                                            navController.navigate(Authentication.route) {
-                                                popUpTo(navController.graph.findStartDestination().id) {
-                                                    inclusive = true
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-
-                            composable(Menu.route) {
-                                MenuListScreen(
-                                    products = sampleProducts,
-                                    onNavigateToDetails = { product ->
-                                        navController.navigate("${ProductDetails.route}/${product.id}")
-                                    },
-                                )
-                            }
-                            composable(Drinks.route) {
-                                DrinksListScreen(
-                                    products = sampleProducts,
-                                    onNavigateToDetails = { product ->
-                                        navController.navigate("${ProductDetails.route}/${product.id}")
-                                    },
-                                )
-                            }
-                            composable("${ProductDetails.route}/{productId}") { backStackEntry ->
-                                val id = backStackEntry.arguments?.getString("productId")
-
-                                sampleProducts.find {
-                                    it.id == id
-                                }?.let { product ->
-                                    ProductDetailsScreen(product = product, onNavigateToCheckout = {
-                                        navController.navigate(Checkout.route)
-                                    })
-
-                                } ?: LaunchedEffect(Unit) {
-                                    // caso alguma informação for nula esse codigo
-                                    // vai ser executado.
-                                    //e oferece suporte do Deep Link
-                                    navController.navigateUp()
-                                }
-                            }
-                            composable(Checkout.route) {
-                                CheckoutScreen(products = sampleProducts, onPopBackStack = {
-                                    navController.navigateUp()
-                                })
-                            }
-
-                            composable(Authentication.route) {
-
-                                AuthenticationScreen { user ->
-                                    scope.launch {
-                                        context.dataStore.edit {
-                                            it[userPreferences] = user
-                                        }
-                                    }
-
-                                    navController.navigate(Highlight.route) {
-                                        popUpTo(navController.graph.id)
-                                    }
-                                }
-                            }
-                        }
+                        PanucciNavHost(navController = navController)
                     }
                 }
             }
