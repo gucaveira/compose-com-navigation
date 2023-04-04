@@ -18,15 +18,20 @@ import androidx.datastore.preferences.core.edit
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navOptions
 import br.com.alura.panucci.navigation.PanucciNavHost
-import br.com.alura.panucci.navigation.bottomAppBarItems
 import br.com.alura.panucci.navigation.drinksRoute
 import br.com.alura.panucci.navigation.highlightsListRoute
 import br.com.alura.panucci.navigation.menuRoute
 import br.com.alura.panucci.navigation.navigateToAuthentication
 import br.com.alura.panucci.navigation.navigateToCheckout
+import br.com.alura.panucci.navigation.navigateToDrinks
+import br.com.alura.panucci.navigation.navigateToHighlightsList
+import br.com.alura.panucci.navigation.navigateToMenu
 import br.com.alura.panucci.ui.components.BottomAppBarItem
+import br.com.alura.panucci.ui.components.BottomAppBarItem.*
 import br.com.alura.panucci.ui.components.PanucciBottomAppBar
+import br.com.alura.panucci.ui.components.bottomAppBarItems
 import br.com.alura.panucci.ui.screens.*
 import br.com.alura.panucci.ui.theme.PanucciTheme
 import kotlinx.coroutines.launch
@@ -60,10 +65,10 @@ class MainActivity : ComponentActivity() {
                     val currentRoute = currentDestination?.route
                     val selectedItem by remember(currentDestination) {
                         val item = when (currentRoute) {
-                            highlightsListRoute -> BottomAppBarItem.HighlightsList
-                            menuRoute -> BottomAppBarItem.Menu
-                            drinksRoute -> BottomAppBarItem.Drinks
-                            else -> BottomAppBarItem.HighlightsList
+                            highlightsListRoute -> HighlightsList
+                            menuRoute -> Menu
+                            drinksRoute -> Drinks
+                            else -> HighlightsList
                         }
                         mutableStateOf(item)
                     }
@@ -80,12 +85,25 @@ class MainActivity : ComponentActivity() {
 
                     PanucciApp(
                         bottomAppBarItemSelected = selectedItem,
-                        onBottomAppBarItemSelectedChange = {
-                            val route = it.destination
-                            navController.navigate(route) {
+                        onBottomAppBarItemSelectedChange = { item ->
+                            val (route, navigate) = when (item) {
+                                Drinks -> Pair(drinksRoute, navController::navigateToDrinks)
+                                HighlightsList ->
+                                    Pair(
+                                        highlightsListRoute,
+                                        navController::navigateToHighlightsList
+                                    )
+                                Menu -> Pair(menuRoute, navController::navigateToMenu)
+                            }
+
+
+                            val navOptions = navOptions {
                                 launchSingleTop = true
                                 popUpTo(route)
                             }
+
+                            navigate(navOptions)
+
                         },
                         onFabClick = { navController.navigateToCheckout() },
                         isShowTopBar = containsInBottomAppBarItems,

@@ -31,9 +31,9 @@ fun NavGraphBuilder.authenticationScreen(
                 }
             }
 
-            navController.navigateToHighlightsList(highlightsListRoute) {
+        /*    navController.navigateToHighlightsList {
                 popUpTo(navController.graph.id)
-            }
+            }*/
 
 
         }

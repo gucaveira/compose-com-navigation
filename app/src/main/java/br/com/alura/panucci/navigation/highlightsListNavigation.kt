@@ -17,9 +17,8 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import androidx.navigation.NavOptionsBuilder
+import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
-import androidx.navigation.navOptions
 import br.com.alura.panucci.dataStore
 import br.com.alura.panucci.sampledata.sampleProducts
 import br.com.alura.panucci.ui.screens.HighlightsListScreen
@@ -81,6 +80,10 @@ fun NavGraphBuilder.highlightsListScreen(
     }
 }
 
-fun NavController.navigateToHighlightsList(route: String, builder: NavOptionsBuilder.() -> Unit) {
-    navigate(route, navOptions(builder))
+/*fun NavController.navigateToHighlightsList(builder: NavOptionsBuilder.() -> Unit) {
+    navigate(highlightsListRoute, navOptions(builder))
+}*/
+
+fun NavController.navigateToHighlightsList(navOptions: NavOptions? = null) {
+    navigate(drinksRoute, navOptions)
 }
