@@ -1,20 +1,12 @@
 package br.com.alura.panucci.navigation
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.Text
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
@@ -47,7 +39,7 @@ fun NavGraphBuilder.highlightsListScreen(
             dataState = "finished"
         }
 
-        when (dataState) {
+     /*   when (dataState) {
             "loading" -> {
                 Box(modifier = Modifier.fillMaxSize()) {
                     Text(
@@ -60,7 +52,7 @@ fun NavGraphBuilder.highlightsListScreen(
                 }
             }
             "loading" -> {
-                user?.let {
+                user?.let {*/
                     HighlightsListScreen(products = sampleProducts,
                         onNavigateToDetails = { product ->
                             navController.navigateToProductDetails(product.id)
@@ -68,7 +60,7 @@ fun NavGraphBuilder.highlightsListScreen(
                         onNavigateToCheckout = {
                             navController.navigateToCheckout()
                         })
-                } ?: LaunchedEffect(key1 = null) {
+                }/* ?: LaunchedEffect(key1 = null) {
                     navController.navigateToAuthentication {
                         popUpTo(navController.graph.findStartDestination().id) {
                             inclusive = true
@@ -77,7 +69,7 @@ fun NavGraphBuilder.highlightsListScreen(
                 }
             }
         }
-    }
+    }*/
 }
 
 /*fun NavController.navigateToHighlightsList(builder: NavOptionsBuilder.() -> Unit) {
