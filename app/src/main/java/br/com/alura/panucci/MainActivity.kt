@@ -3,17 +3,15 @@ package br.com.alura.panucci
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ExitToApp
-import androidx.compose.material.icons.filled.PointOfSale
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.datastore.preferences.core.edit
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -25,11 +23,10 @@ import br.com.alura.panucci.navigation.highlightsListRoute
 import br.com.alura.panucci.navigation.menuRoute
 import br.com.alura.panucci.navigation.navigateToAuthentication
 import br.com.alura.panucci.navigation.navigateToCheckout
-import br.com.alura.panucci.ui.components.BottomAppBarItem
-import br.com.alura.panucci.ui.components.BottomAppBarItem.*
-import br.com.alura.panucci.ui.components.PanucciBottomAppBar
-import br.com.alura.panucci.ui.components.bottomAppBarItems
-import br.com.alura.panucci.ui.screens.*
+import br.com.alura.panucci.ui.components.BottomAppBarItem.Drinks
+import br.com.alura.panucci.ui.components.BottomAppBarItem.HighlightsList
+import br.com.alura.panucci.ui.components.BottomAppBarItem.Menu
+import br.com.alura.panucci.ui.screens.PanucciAppScreen
 import br.com.alura.panucci.ui.theme.PanucciTheme
 import kotlinx.coroutines.launch
 
@@ -80,7 +77,7 @@ class MainActivity : ComponentActivity() {
                         else -> false
                     }
 
-                    PanucciApp(
+                    PanucciAppScreen(
                         bottomAppBarItemSelected = selectedItem,
                         onBottomAppBarItemSelectedChange = { item ->
                             navController.navigateSingleTopWithPopUpTo(item)
@@ -110,69 +107,4 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun PanucciApp(
-    bottomAppBarItemSelected: BottomAppBarItem = bottomAppBarItems.first(),
-    onBottomAppBarItemSelectedChange: (BottomAppBarItem) -> Unit = {},
-    onFabClick: () -> Unit = {},
-    onLogout: () -> Unit = {},
-    isShowTopBar: Boolean = false,
-    isShowBottomBar: Boolean = false,
-    isShowFab: Boolean = false,
-    content: @Composable () -> Unit,
-) {
-    Scaffold(topBar = {
-        if (isShowTopBar) {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(text = "Ristorante Panucci")
-                },
-                actions = {
-                    IconButton(onClick = onLogout) {
-                        Icon(
-                            Icons.Filled.ExitToApp,
-                            contentDescription = "sair do app"
-                        )
-                    }
-                }
-            )
-        }
-    }, bottomBar = {
-        if (isShowBottomBar) {
-            PanucciBottomAppBar(
-                item = bottomAppBarItemSelected,
-                items = bottomAppBarItems,
-                onItemChange = onBottomAppBarItemSelectedChange,
-            )
-        }
-    }, floatingActionButton = {
-        if (isShowFab) {
-            FloatingActionButton(
-                onClick = onFabClick
-            ) {
-                Icon(
-                    Icons.Filled.PointOfSale, contentDescription = null
-                )
-            }
-        }
-    }) {
-        Box(
-            modifier = Modifier.padding(it)
-        ) {
-            content()
-        }
-    }
-}
-
-@Preview
-@Composable
-private fun PanucciAppPreview() {
-    PanucciTheme {
-        Surface {
-            PanucciApp {}
-        }
-    }
 }
