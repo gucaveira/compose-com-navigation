@@ -1,19 +1,21 @@
 package br.com.alura.panucci.navigation
 
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import br.com.alura.panucci.dataStore
-import br.com.alura.panucci.sampledata.sampleProducts
 import br.com.alura.panucci.ui.screens.HighlightsListScreen
+import br.com.alura.panucci.ui.viewmodels.HighlightsListViewModel
 import br.com.alura.panucci.userPreferences
 import kotlinx.coroutines.flow.first
 
@@ -23,6 +25,9 @@ fun NavGraphBuilder.highlightsListScreen(
     navController: NavHostController,
 ) {
     composable(highlightsListRoute) {
+
+        val viewModel = viewModel<HighlightsListViewModel>()
+        val uiState by viewModel.uiState.collectAsState()
 
         val context = LocalContext.current
 
@@ -53,7 +58,7 @@ fun NavGraphBuilder.highlightsListScreen(
             }
             "loading" -> {
                 user?.let {*/
-                    HighlightsListScreen(products = sampleProducts,
+                    HighlightsListScreen(uiState = uiState,
                         onNavigateToDetails = { product ->
                             navController.navigateToProductDetails(product.id)
                         },

@@ -19,16 +19,18 @@ import br.com.alura.panucci.sampledata.sampleProducts
 import br.com.alura.panucci.ui.components.DrinkProductCard
 import br.com.alura.panucci.ui.theme.PanucciTheme
 import br.com.alura.panucci.ui.theme.caveatFont
+import br.com.alura.panucci.ui.uistate.DrinksListUiState
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DrinksListScreen(
     modifier: Modifier = Modifier,
     title: String = "Bebidas",
-    products: List<Product> = emptyList(),
+    uiState: DrinksListUiState = DrinksListUiState(),
     columns: Int = 2,
     onNavigateToDetails: (Product) -> Unit = {},
 ) {
+    val products = uiState.products
     Column(
         modifier
             .fillMaxSize()
@@ -69,7 +71,7 @@ fun DrinksListScreenPreview() {
     PanucciTheme {
         Surface {
             DrinksListScreen(
-                products = sampleProducts,
+                uiState = DrinksListUiState(sampleProducts),
                 title = "Bebidas"
             )
         }
