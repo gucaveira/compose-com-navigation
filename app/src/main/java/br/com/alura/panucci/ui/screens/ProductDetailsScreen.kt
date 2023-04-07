@@ -36,26 +36,22 @@ import coil.compose.AsyncImage
 fun ProductDetailsScreen(
     uiState: ProductDetailsUiState,
     modifier: Modifier = Modifier,
-    onNavigateToCheckout: () -> Unit = {},
-    onTryFindProductAgain: () -> Unit = {},
-    onBackStack: () -> Unit = {},
+    onOrderClick: () -> Unit = {},
+    onTryFindProductAgainClick: () -> Unit = {},
+    onBackClick: () -> Unit = {},
 ) {
     when (uiState) {
-        ProductDetailsUiState.Failure -> FailureScreen(onTryFindProductAgain, onBackStack)
+        ProductDetailsUiState.Failure -> FailureScreen(onTryFindProductAgainClick, onBackClick)
         ProductDetailsUiState.Loading -> LoadingScreen()
-        is ProductDetailsUiState.Success -> SuccessScreen(
-            modifier,
-            onNavigateToCheckout,
-            uiState.product
-        )
+        is ProductDetailsUiState.Success -> SuccessScreen(modifier, onOrderClick, uiState.product)
 
     }
 }
 
 @Composable
 fun FailureScreen(
-    onTryFindProductAgain: () -> Unit = {},
-    onBackStack: () -> Unit = {},
+    onTryFindProductAgainClick: () -> Unit = {},
+    onBackClick: () -> Unit = {},
 ) {
     Column(
         Modifier.fillMaxSize(),
@@ -64,12 +60,12 @@ fun FailureScreen(
     ) {
         Text(text = "Falha ao buscar o produto")
         Spacer(modifier = Modifier.height(8.dp))
-        Button(onClick = { onTryFindProductAgain() }) {
+        Button(onClick = { onTryFindProductAgainClick() }) {
             Text(text = "Buscar novamente")
 
         }
         Spacer(modifier = Modifier.height(8.dp))
-        TextButton(onClick = { onBackStack() }) {
+        TextButton(onClick = { onBackClick() }) {
             Text(text = "Voltar")
 
         }
@@ -128,11 +124,38 @@ fun SuccessScreen(
 
 @Preview
 @Composable
-fun ProductDetailsScreenPreview() {
+private fun ProductDetailsScreenWithSuccessStatePreview() {
     PanucciTheme {
         Surface {
             ProductDetailsScreen(
-                uiState = ProductDetailsUiState.Success(sampleProducts.random()),
+                uiState = ProductDetailsUiState.Success(
+                    sampleProducts.random()
+                ),
+            )
+        }
+    }
+}
+
+
+@Preview
+@Composable
+private fun ProductDetailsScreenWithFailureStatePreview() {
+    PanucciTheme {
+        Surface {
+            ProductDetailsScreen(
+                uiState = ProductDetailsUiState.Failure,
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun ProductDetailsScreenWithLoadingStatePreview() {
+    PanucciTheme {
+        Surface {
+            ProductDetailsScreen(
+                uiState = ProductDetailsUiState.Loading,
             )
         }
     }

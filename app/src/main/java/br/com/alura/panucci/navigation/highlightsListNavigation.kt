@@ -10,10 +10,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import br.com.alura.panucci.dataStore
+import br.com.alura.panucci.model.Product
 import br.com.alura.panucci.ui.screens.HighlightsListScreen
 import br.com.alura.panucci.ui.viewmodels.HighlightsListViewModel
 import br.com.alura.panucci.userPreferences
@@ -22,7 +22,8 @@ import kotlinx.coroutines.flow.first
 internal const val highlightsListRoute = "highlight"
 
 fun NavGraphBuilder.highlightsListScreen(
-    navController: NavHostController,
+    onNavigateToCheckout: () -> Unit,
+    onNavigateToProductDetails: (Product) -> Unit
 ) {
     composable(highlightsListRoute) {
 
@@ -59,13 +60,9 @@ fun NavGraphBuilder.highlightsListScreen(
             "loading" -> {
                 user?.let {*/
                     HighlightsListScreen(uiState = uiState,
-                        onNavigateToDetails = { product ->
-                            navController.navigateToProductDetails(product.id)
-                        },
-                        onNavigateToCheckout = {
-                            navController.navigateToCheckout()
-                        })
-                }/* ?: LaunchedEffect(key1 = null) {
+                        onProductClick = onNavigateToProductDetails,
+                        onOrderClick = onNavigateToCheckout)
+                /* ?: LaunchedEffect(key1 = null) {
                     navController.navigateToAuthentication {
                         popUpTo(navController.graph.findStartDestination().id) {
                             inclusive = true
@@ -73,8 +70,8 @@ fun NavGraphBuilder.highlightsListScreen(
                     }
                 }
             }
-        }
-    }*/
+        }*/
+    }
 }
 
 /*fun NavController.navigateToHighlightsList(builder: NavOptionsBuilder.() -> Unit) {

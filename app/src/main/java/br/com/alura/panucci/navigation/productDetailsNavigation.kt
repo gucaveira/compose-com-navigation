@@ -6,7 +6,6 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import br.com.alura.panucci.ui.screens.ProductDetailsScreen
 import br.com.alura.panucci.ui.viewmodels.ProductDetailsViewModel
@@ -14,7 +13,10 @@ import br.com.alura.panucci.ui.viewmodels.ProductDetailsViewModel
 private const val productDetailsRoute = "productDetails"
 private const val productIdArgument = "productId"
 
-fun NavGraphBuilder.productDetailsScreen(navController: NavHostController) {
+fun NavGraphBuilder.productDetailsScreen(
+    onNavigateToCheckout: () -> Unit,
+    onPopBackStack: () -> Unit,
+) {
     composable("$productDetailsRoute/{$productIdArgument}") { backStackEntry ->
         backStackEntry.arguments?.getString(productIdArgument)?.let { id ->
 
@@ -24,18 +26,20 @@ fun NavGraphBuilder.productDetailsScreen(navController: NavHostController) {
                 viewModel.findProductById(id)
             }
 
-            ProductDetailsScreen(uiState = uiState,
-                onNavigateToCheckout = { navController.navigateToCheckout() },
-                onTryFindProductAgain = {
+            ProductDetailsScreen(
+                uiState = uiState,
+                onOrderClick = onNavigateToCheckout,
+                onTryFindProductAgainClick = {
                     viewModel.findProductById(id)
                 },
-                onBackStack = { navController.navigateUp() })
+                onBackClick = onPopBackStack
+            )
 
         } ?: LaunchedEffect(Unit) {
             // caso alguma informação for nula esse codigo
             // vai ser executado.
             //e oferece suporte do Deep Link
-            navController.navigateUp()
+            onPopBackStack()
         }
     }
 }

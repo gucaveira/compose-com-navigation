@@ -2,9 +2,9 @@ package br.com.alura.panucci.navigation.graph
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
 import androidx.navigation.navOptions
 import androidx.navigation.navigation
+import br.com.alura.panucci.model.Product
 import br.com.alura.panucci.navigation.drinksListScreen
 import br.com.alura.panucci.navigation.drinksRoute
 import br.com.alura.panucci.navigation.highlightsListRoute
@@ -18,11 +18,14 @@ import br.com.alura.panucci.ui.components.BottomAppBarItem
 
 internal const val homeGraphRoute = "home"
 
-fun NavGraphBuilder.homeGraph(navController: NavHostController) {
+fun NavGraphBuilder.homeGraph(
+    onNavigateToCheckout: () -> Unit,
+    onNavigateToProductDetails: (Product) -> Unit,
+) {
     navigation(startDestination = highlightsListRoute, route = homeGraphRoute) {
-        highlightsListScreen(navController)
-        menuListScreen(navController)
-        drinksListScreen(navController)
+        highlightsListScreen(onNavigateToCheckout, onNavigateToProductDetails)
+        menuListScreen(onNavigateToProductDetails)
+        drinksListScreen(onNavigateToProductDetails)
     }
 }
 

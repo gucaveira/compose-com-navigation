@@ -29,7 +29,7 @@ fun MenuListScreen(
     modifier: Modifier = Modifier,
     title: String = "Menu",
     uiState: MenuListUiState = MenuListUiState(),
-    onNavigateToDetails: (Product) -> Unit = {},
+    onProductClick: (Product) -> Unit = {},
 ) {
     val products = uiState.products
 
@@ -56,7 +56,7 @@ fun MenuListScreen(
             items(products) { p ->
                 MenuProductCard(
                     product = p,
-                    Modifier.clickable { onNavigateToDetails(p) }
+                    Modifier.clickable { onProductClick(p) }
                 )
             }
         }
