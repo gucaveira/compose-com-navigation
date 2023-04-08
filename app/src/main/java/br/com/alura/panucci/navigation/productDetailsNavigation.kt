@@ -11,7 +11,7 @@ import br.com.alura.panucci.ui.screens.ProductDetailsScreen
 import br.com.alura.panucci.ui.viewmodels.ProductDetailsViewModel
 
 private const val productDetailsRoute = "productDetails"
-private const val productIdArgument = "productId"
+internal const val productIdArgument = "productId"
 
 fun NavGraphBuilder.productDetailsScreen(
     onNavigateToCheckout: () -> Unit,
@@ -20,11 +20,10 @@ fun NavGraphBuilder.productDetailsScreen(
     composable("$productDetailsRoute/{$productIdArgument}") { backStackEntry ->
         backStackEntry.arguments?.getString(productIdArgument)?.let { id ->
 
-            val viewModel = viewModel<ProductDetailsViewModel>()
+            val viewModel = viewModel<ProductDetailsViewModel>(
+                factory = ProductDetailsViewModel.Factory
+            )
             val uiState by viewModel.uiState.collectAsState()
-            LaunchedEffect(key1 = Unit) {
-                viewModel.findProductById(id)
-            }
 
             ProductDetailsScreen(
                 uiState = uiState,
