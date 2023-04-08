@@ -22,7 +22,13 @@ fun PanucciNavHost(navController: NavHostController) {
             onNavigateToCheckout = { navController.navigateToCheckout() },
             onPopBackStack = { navController.navigateUp() }
         )
-        checkoutScreen(onPopBackStack = { navController.navigateUp() })
+        checkoutScreen(onPopBackStack = {
+            navController.currentBackStackEntry?.savedStateHandle?.set(
+                "order_done",
+                "Pedido realizado com sucesso"
+            )
+            navController.navigateUp()
+        })
         authenticationScreen(navController)
     }
 }

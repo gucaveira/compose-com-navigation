@@ -5,7 +5,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,6 +42,21 @@ class MainActivity : ComponentActivity() {
             val scope = rememberCoroutineScope()
             val backStackEntryState by navController.currentBackStackEntryAsState()
             val currentDestination = backStackEntryState?.destination
+
+            val orderDoneMessage =
+                backStackEntryState?.savedStateHandle
+                    ?.getStateFlow<String?>("order_done", null)
+                    ?.collectAsState()
+
+            val snackbarHostState = remember {
+                SnackbarHostState()
+            }
+
+            orderDoneMessage?.value?.let { message ->
+                scope.launch {
+                    snackbarHostState.showSnackbar(message = message)
+                }
+            }
 
             //Use o LauccheDEffect para logica que não se aplica a click ou eventos
             // Pq o compose executa a criacao de tela com muita frequencia e se essa logica não for
@@ -78,6 +95,7 @@ class MainActivity : ComponentActivity() {
                     }
 
                     PanucciAppScreen(
+                        snackbarHostState = snackbarHostState,
                         bottomAppBarItemSelected = selectedItem,
                         onBottomAppBarItemSelectedChange = { item ->
                             navController.navigateSingleTopWithPopUpTo(item)
