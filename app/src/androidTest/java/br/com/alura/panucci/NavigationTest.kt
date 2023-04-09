@@ -18,8 +18,10 @@ import br.com.alura.panucci.navigation.checkoutRoute
 import br.com.alura.panucci.navigation.drinksRoute
 import br.com.alura.panucci.navigation.highlightsListRoute
 import br.com.alura.panucci.navigation.menuRoute
+import br.com.alura.panucci.navigation.navigateToProductDetails
 import br.com.alura.panucci.navigation.productDetailsRoute
 import br.com.alura.panucci.navigation.productIdArgument
+import br.com.alura.panucci.sampledata.sampleProducts
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
@@ -190,6 +192,28 @@ class NavigationTest {
             .performClick()
 
         composeTestRule.onNodeWithContentDescription("Floating Action Button for order")
+            .performClick()
+
+        composeTestRule.onNodeWithText("Pedido")
+            .assertIsDisplayed()
+
+        val route = navController.currentBackStackEntry?.destination?.route
+        assertEquals(route, checkoutRoute)
+    }
+
+    @Test
+    fun appNavHost_VerifyIfCheckoutScreenIsDisplayedFromProductDetailsScreen() {
+        composeTestRule.onRoot().printToLog("panucci app")
+
+        composeTestRule.runOnUiThread {
+            navController.navigateToProductDetails(sampleProducts.first().id)
+        }
+        composeTestRule.waitUntil(3000) {
+            composeTestRule.onAllNodesWithText("Pedir")
+                .fetchSemanticsNodes().size == 1
+        }
+
+        composeTestRule.onNodeWithText("Pedir")
             .performClick()
 
         composeTestRule.onNodeWithText("Pedido")
