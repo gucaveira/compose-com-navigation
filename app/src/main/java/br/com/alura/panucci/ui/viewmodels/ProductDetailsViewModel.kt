@@ -9,7 +9,9 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import br.com.alura.panucci.dao.ProductDao
 import br.com.alura.panucci.navigation.productIdArgument
+import br.com.alura.panucci.navigation.promoCodeArgument
 import br.com.alura.panucci.ui.uistate.ProductDetailsUiState
+import java.math.BigDecimal
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filterNotNull
@@ -23,9 +25,16 @@ class ProductDetailsViewModel(
 
     private val _uiState = MutableStateFlow<ProductDetailsUiState>(ProductDetailsUiState.Loading)
     val uiState = _uiState.asStateFlow()
+    private var discount = BigDecimal.ZERO
 
     init {
         viewModelScope.launch {
+            val promoCode = savedStateHandle.get<String?>(promoCodeArgument)
+            discount = when (promoCode) {
+                "PANUCCI10" -> BigDecimal("0.1")
+                else -> BigDecimal.ZERO
+            }
+
             savedStateHandle.getStateFlow<String?>(productIdArgument, null)
                 .filterNotNull()
                 .collect { id ->
@@ -38,8 +47,8 @@ class ProductDetailsViewModel(
         _uiState.update { ProductDetailsUiState.Loading }
 
         val dataState = dao.findById(id)?.let { product ->
-            ProductDetailsUiState.Success(product = product)
-
+            val priceWithDiscount = product.price - (product.price * discount)
+            ProductDetailsUiState.Success(product = product.copy(price = priceWithDiscount))
         } ?: ProductDetailsUiState.Failure
 
         _uiState.update { dataState }

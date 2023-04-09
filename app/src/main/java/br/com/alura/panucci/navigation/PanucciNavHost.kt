@@ -6,6 +6,8 @@ import androidx.navigation.compose.NavHost
 import br.com.alura.panucci.navigation.graph.homeGraph
 import br.com.alura.panucci.navigation.graph.homeGraphRoute
 
+internal const val uri = "alura://panucci.com.br"
+
 @Composable
 fun PanucciNavHost(navController: NavHostController) {
     NavHost(
