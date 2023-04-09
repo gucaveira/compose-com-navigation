@@ -10,10 +10,10 @@ import br.com.alura.panucci.ui.screens.CheckoutScreen
 import br.com.alura.panucci.ui.viewmodels.CheckoutViewModel
 
 
-private const val CheckoutRoute = "checkout"
+internal const val checkoutRoute = "checkout"
 
 fun NavGraphBuilder.checkoutScreen(onPopBackStack: () -> Unit, ) {
-    composable(CheckoutRoute) {
+    composable(checkoutRoute) {
 
         val viewModel = viewModel<CheckoutViewModel>()
         val uiState by viewModel.uiState.collectAsState()
@@ -23,5 +23,5 @@ fun NavGraphBuilder.checkoutScreen(onPopBackStack: () -> Unit, ) {
 }
 
 fun NavController.navigateToCheckout() {
-    navigate(CheckoutRoute)
+    navigate(checkoutRoute)
 }
